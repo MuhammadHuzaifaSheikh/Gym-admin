@@ -7,7 +7,6 @@ import "./Css/theme-semi-dark.css"
 import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'; 
 // import 'bootstrap/dist/css/bootstrap.min.css';
-import * as Popper from '@popperjs/core'
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
