@@ -13,7 +13,8 @@ const UserDashBoard = () => {
   const [activeUser, setActiveUser] = useState(0);
   const [totalUser, settotalUser] = useState(0);
   const [timerInterval, setTimerInterval] = useState(null);
-  const [attendanceLogs, setAttendanceLogs] = useState([]); // State for attendance logs
+  const [attendanceLogs, setAttendanceLogs] = useState(); // State for attendance logs
+  const [attendanceData, setAttendanceData] = useState([]); // State for attendance logs
 
   let user = JSON.parse(localStorage.getItem("user"));
   const token = localStorage.getItem("token");
@@ -31,22 +32,9 @@ const UserDashBoard = () => {
       );
 
       const attendanceData = response?.data?.data;
-      console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", attendanceData);
-      if (attendanceData) {
-        const { status, total_mint_spend } = attendanceData;
-        if (status === "punchIn") {
-          setIsPunchedIn(true);
-          startTimer(total_mint_spend);
-        } else if (status === "punchOut") {
-          setIsPunchedOut(true);
-          setIsPunchedIn(false);
-          setCurrentTime(formatTimeFromSeconds(total_mint_spend));
-        }
-      } else {
-        setIsPunchedOut(false);
-        setIsPunchedIn(false);
-        setCurrentTime("00:00:00");
-      }
+      console.log("attendanceData", attendanceData);
+      setAttendanceData(attendanceData)
+
     } catch (error) {
       console.error("Error fetching attendance:", error);
     }
@@ -78,29 +66,44 @@ const UserDashBoard = () => {
     if (timerInterval) {
       clearInterval(timerInterval);
       setTimerInterval(null);
+      setCurrentTime("00:00:00");
     }
   };
-  const handleAttendanceAction = async () => {
-    try {
-      const markAttendance = await axios.post(
-        `${App_host}/attendence/addUpdateAttendence?jimId=${activegym}`,
-        {},
-        {
-          headers: {
-            token: token,
-          },
-        }
-      );
-  
-      const attendanceData = markAttendance.data.data;
-      setAttendanceLogs(markAttendance);
 
-      if (attendanceData.status === "punchIn") {
+  function timeToSeconds(timeString) {
+    var timeParts = timeString.split(':');
+    var hours = parseInt(timeParts[0], 10) || 0;
+    var minutes = parseInt(timeParts[1], 10) || 0;
+    var seconds = parseInt(timeParts[2], 10) || 0;
+
+    return hours * 3600 + minutes * 60 + seconds;
+  }
+
+  const handleAttendanceAction = async (status) => {
+
+    console.log("status", status)
+
+
+    try {
+
+
+      if (status === "punchIn") {
+
+        const markAttendance = await axios.post(
+          `${App_host}/attendence/addUpdateAttendence?jimId=${activegym}`,
+          {},
+          {
+            headers: {
+              token: token,
+            },
+          }
+        );
+
+        setAttendanceLogs(markAttendance?.data?.data
+        );
         setIsPunchedIn(true);
         startTimer(
-          attendanceData.total_mint_spend > 0
-            ? attendanceData.total_mint_spend
-            : 0
+          0
         );
         toast.success("Check In successful", {
           position: "top-right",
@@ -113,12 +116,31 @@ const UserDashBoard = () => {
           theme: "light",
           transition: Bounce,
         });
-      } else if (attendanceData.status === "punchOut") {
+      } else if (status === "punchOut") {
         setIsPunchedOut(true);
         setIsPunchedIn(false);
-        const totalSecondsSpent = attendanceData.total_mint_spend;
-  
-        setCurrentTime(formatTimeFromSeconds(totalSecondsSpent));
+        // const totalSecondsSpent = attendanceData.total_mint_spend;
+
+
+        console.log("currentTime", { currentTime })
+
+
+        setCurrentTime(currentTime);
+
+
+        let formatedTime = timeToSeconds(currentTime)
+
+        const res = await axios.post(
+          `${App_host}/attendence/addUpdateAttendence?jimId=${activegym}`,
+          { ...attendanceLogs, total_mint_spend: formatedTime, status, BusinessLocation: activegym },
+          {
+            headers: {
+              token: token,
+            },
+          }
+        );
+
+        console.log("Out", res?.data?.data)
         stopTimer();
         toast.success("Check Out successful", {
           position: "top-right",
@@ -131,17 +153,17 @@ const UserDashBoard = () => {
           theme: "light",
           transition: Bounce,
         });
-  
+
         // Reset clock
         setCurrentTime("00:00:00");
       }
-  
+
       getActiveUser();
     } catch (error) {
       console.error("Error performing attendance action:", error);
     }
   };
-  
+
 
   const formatTimeFromSeconds = (totalSeconds) => {
     const hours = Math.floor(totalSeconds / 3600);
@@ -174,50 +196,56 @@ const UserDashBoard = () => {
   };
 
 
+  useEffect(() => {
+    // Add event listeners when component mounts
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener("unload", handleUnload);
 
-  console.log("attendanceLogs",attendanceLogs)
-  const AttendanceLogSidebar = ({ attendanceLogs }) => {
-  return (
-    <div className="sidebar">
-      <h3>Attendance Logs</h3>
-      <ul>
-        {attendanceLogs.map((log) => (
-          <li key={log.id}>
-            {log.name} - {log.time}
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-};
+    // Cleanup function
+    return () => {
+      // Remove event listeners when component unmounts
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener("unload", handleUnload);
+      stopTimer(); // Clean up timer on component unmount
+    };
+  }, []);
+
+  const handleBeforeUnload = (event) => {
+    // Call your attendance action function before the page unloads
+    stopTimer();
+
+    // Return the standard message to show the browser's confirmation dialog
+    event.preventDefault();
+    event.returnValue = "";
+  };
+
+  const handleUnload = (event) => {
+    // Clean up any necessary resources before the page unloads completely
+    if (event) {
+      // Handle unload action if it's not a cancel event
+      stopTimer();
+    }
+  };
 
 
 
-  const dummyCheckInData = [
-    { id: 1, name: 'John Doe', time: '9:00 AM' },
-    { id: 2, name: 'Jane Smith', time: '9:30 AM' },
-    { id: 3, name: 'Alice Johnson', time: '10:00 AM' },
-    // Add more dummy data as needed
-  ];
 
-  const CheckInTable = ({ checkInData }) => {
+
+  const CheckInTable = ({ title,field }) => {
     // If no data is provided, use dummy data
-    const data = checkInData || dummyCheckInData;
 
     return (
       <div className="table-responsive">
         <table className="table table-bordered">
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Check In Time</th>
+              <th>{title}</th>
             </tr>
           </thead>
           <tbody>
-            {data.map((item) => (
-              <tr key={item.id}>
-                <td>{item.name}</td>
-                <td>{item.time}</td>
+            {attendanceData.map((item) => (
+              <tr key={item._id}>
+                <td>{ new Date(item[field]).toLocaleTimeString()   }</td>
               </tr>
             ))}
           </tbody>
@@ -254,7 +282,7 @@ const UserDashBoard = () => {
                       <p>Current Time: {currentTime}</p>
                       <button
                         className="btn btn-primary"
-                        onClick={handleAttendanceAction}
+                        onClick={() => handleAttendanceAction(isPunchedIn ? "punchOut" : "punchIn")}
                       >
                         {isPunchedIn ? "Check-out" : "Check-in"}
                       </button>
@@ -310,16 +338,16 @@ const UserDashBoard = () => {
             </div>
             <div className="col-12 col-xl-12 mb-4">
               <div className="row">
-                <div className="col-4">
-                  <h5 className="m-0 card-title">Check In Time</h5>
-                  <CheckInTable />
+                <div className="col-3">
+                  <h5 className="m-0 card-title mb-3">Check In Time</h5>
+                  <CheckInTable title="Check In Time" field="punchInTime" />
                 </div>
-                <div className="mt-n1 col-4 col-md-6 mx-auto">
+                <div className="col-6 col-md-6 mx-auto">
                   <PeakHoursChart />
                 </div>
-                <div className="col-4">
-                  <h5 className="m-0 card-title">Check Out Time</h5>
-                  <CheckInTable />
+                <div className="col-3">
+                  <h5 className="m-0 card-title mb-3">Check Out Time</h5>
+                  <CheckInTable title="Check Out Time" field="punchOutTime" />
                 </div>
               </div>
             </div>

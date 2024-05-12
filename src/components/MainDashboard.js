@@ -11,7 +11,9 @@ import axios from "axios";
 
 const MainDashboard = () => {
 const [dashBoardData,setDashboardData]=useState()
+const [gymUsers,setGymUsers] = useState()
     let token = localStorage.getItem("token")
+
     const getPackagesList = async () => {
         try {
             const response = await axios.get(`${App_host}/earning/getDashboardDetails`, {
@@ -19,11 +21,23 @@ const [dashBoardData,setDashboardData]=useState()
                     token,
                 },
             });
+
+            const responseGymUsers = await axios.get(`${App_host}/earning/GymwithLeastandMostUsers`, {
+                headers: {
+                    token,
+                },
+            });
+
+            setGymUsers(responseGymUsers?.data)
             setDashboardData(response.data.data);
         } catch (error) {
             console.error('Error fetching users:', error);
         }
     }
+
+
+
+    console.log("gymUsers",gymUsers)
     useEffect(() => {
         getPackagesList()
     }, [])
@@ -103,74 +117,30 @@ const [dashBoardData,setDashboardData]=useState()
                                     </div>
                                     <div className="card-body">
                                         <ul className="p-0 m-0">
-                                            <li className="d-flex mb-4 pb-1">
+
+
+
+                                            {gymUsers?.mostActiveMembers.length>0 && gymUsers?.mostActiveMembers?.map((item,index)=>(
+                                                <li key={index} className="d-flex mb-4 pb-1">
                                                 <div className="avatar flex-shrink-0 me-3">
                                                     <span className="avatar-initial rounded bg-label-primary"><i className="ti ti-circle-check"></i></span>
                                                 </div>
                                                 <div className="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
                                                     <div className="me-2">
-                                                        <h6 className="mb-0 fw-normal">Gym Name</h6>
+                                                        <h6 className="mb-0 fw-normal text-capitalize">{item?.gym?.Gym?.name ||item?.gym?.Gym?.full_name}</h6>
                                                         <small className="text-success fw-normal d-block">
                                                             <i className="ti ti-chevron-up mb-1"></i>
-                                                            14 New Members
+                                                            {item?.activeMemberCount} Active Members
                                                         </small>
                                                     </div>
                                                     <div className="user-progress">
-                                                        <h6 className="mb-0">100 Active Members</h6>
+                                                        <h6 className="mb-0">{item?.count} Members</h6>
                                                     </div>
                                                 </div>
                                             </li>
-                                            <li className="d-flex mb-4 pb-1">
-                                                <div className="avatar flex-shrink-0 me-3">
-                                                    <span className="avatar-initial rounded bg-label-primary"><i className="ti ti-circle-check"></i></span>
-                                                </div>
-                                                <div className="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                                                    <div className="me-2">
-                                                        <h6 className="mb-0 fw-normal">Gym Name</h6>
-                                                        <small className="text-success fw-normal d-block">
-                                                            <i className="ti ti-chevron-up mb-1"></i>
-                                                            10 New Members
-                                                        </small>
-                                                    </div>
-                                                    <div className="user-progress">
-                                                        <h6 className="mb-0">90 Active Members</h6>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                            <li className="d-flex mb-4 pb-1">
-                                                <div className="avatar flex-shrink-0 me-3">
-                                                    <span className="avatar-initial rounded bg-label-primary"><i className="ti ti-circle-check"></i></span>
-                                                </div>
-                                                <div className="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                                                    <div className="me-2">
-                                                        <h6 className="mb-0 fw-normal">Gym Name</h6>
-                                                        <small className="text-success fw-normal d-block">
-                                                            <i className="ti ti-chevron-up mb-1"></i>
-                                                            6 New Members
-                                                        </small>
-                                                    </div>
-                                                    <div className="user-progress">
-                                                        <h6 className="mb-0">70 Active Members</h6>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                            <li className="d-flex mb-4 pb-1">
-                                                <div className="avatar flex-shrink-0 me-3">
-                                                    <span className="avatar-initial rounded bg-label-primary"><i className="ti ti-circle-check"></i></span>
-                                                </div>
-                                                <div className="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                                                    <div className="me-2">
-                                                        <h6 className="mb-0 fw-normal">Gym Name</h6>
-                                                        <small className="text-success fw-normal d-block">
-                                                            <i className="ti ti-chevron-up mb-1"></i>
-                                                            4 New Members
-                                                        </small>
-                                                    </div>
-                                                    <div className="user-progress">
-                                                        <h6 className="mb-0">50 Active Members</h6>
-                                                    </div>
-                                                </div>
-                                            </li>
+                                            ))}
+                                            
+                                           
                                         </ul>
                                     </div>
                                 </div>
@@ -186,74 +156,29 @@ const [dashBoardData,setDashboardData]=useState()
                                     </div>
                                     <div className="card-body">
                                         <ul className="p-0 m-0">
-                                            <li className="d-flex mb-4 pb-1">
-                                                <div className="avatar flex-shrink-0 me-3">
-                                                    <span className="avatar-initial rounded bg-label-primary"><i className="ti ti-circle-check"></i></span>
-                                                </div>
-                                                <div className="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                                                    <div className="me-2">
-                                                        <h6 className="mb-0 fw-normal">Gym Name</h6>
-                                                        <small className="text-danger fw-normal d-block">
-                                                            <i className="ti ti-chevron-down mb-1"></i>
-                                                            10 Members Left
-                                                        </small>
-                                                    </div>
-                                                    <div className="user-progress">
-                                                        <h6 className="mb-0">100 Active Members</h6>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                            <li className="d-flex mb-4 pb-1">
-                                                <div className="avatar flex-shrink-0 me-3">
-                                                    <span className="avatar-initial rounded bg-label-primary"><i className="ti ti-circle-check"></i></span>
-                                                </div>
-                                                <div className="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                                                    <div className="me-2">
-                                                        <h6 className="mb-0 fw-normal">Gym Name</h6>
-                                                        <small className="text-danger fw-normal d-block">
-                                                            <i className="ti ti-chevron-down mb-1"></i>
-                                                            10 Members Left
-                                                        </small>
-                                                    </div>
-                                                    <div className="user-progress">
-                                                        <h6 className="mb-0">100 Active Members</h6>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                            <li className="d-flex mb-4 pb-1">
-                                                <div className="avatar flex-shrink-0 me-3">
-                                                    <span className="avatar-initial rounded bg-label-primary"><i className="ti ti-circle-check"></i></span>
-                                                </div>
-                                                <div className="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                                                    <div className="me-2">
-                                                        <h6 className="mb-0 fw-normal">Gym Name</h6>
-                                                        <small className="text-danger fw-normal d-block">
-                                                            <i className="ti ti-chevron-down mb-1"></i>
-                                                            10 Members Left
-                                                        </small>
-                                                    </div>
-                                                    <div className="user-progress">
-                                                        <h6 className="mb-0">100 Active Members</h6>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                            <li className="d-flex mb-4 pb-1">
-                                                <div className="avatar flex-shrink-0 me-3">
-                                                    <span className="avatar-initial rounded bg-label-primary"><i className="ti ti-circle-check"></i></span>
-                                                </div>
-                                                <div className="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                                                    <div className="me-2">
-                                                        <h6 className="mb-0 fw-normal">Gym Name</h6>
-                                                        <small className="text-danger fw-normal d-block">
-                                                            <i className="ti ti-chevron-down mb-1"></i>
-                                                            10 Members Left
-                                                        </small>
-                                                    </div>
-                                                    <div className="user-progress">
-                                                        <h6 className="mb-0">100 Active Members</h6>
-                                                    </div>
-                                                </div>
-                                            </li>
+
+                                        {gymUsers?.mostInactiveMembers.length>0 && gymUsers?.mostInactiveMembers?.map((item,index)=>(
+                                             <li className="d-flex mb-4 pb-1">
+                                             <div className="avatar flex-shrink-0 me-3">
+                                                 <span className="avatar-initial rounded bg-label-primary"><i className="ti ti-circle-check"></i></span>
+                                             </div>
+                                             <div className="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                                                 <div className="me-2">
+                                                     <h6 className="mb-0 fw-normal text-capitalize">{item?.gym?.Gym?.name ||item?.gym?.Gym?.full_name}</h6>
+                                                     <small className="text-danger fw-normal d-block">
+                                                         <i className="ti ti-chevron-down mb-1"></i>
+                                                         {item?.inactivMemberCount} Inactive Members
+                                                     </small>
+                                                 </div>
+                                                 <div className="user-progress">
+                                                     <h6 className="mb-0">{item?.count}  Members</h6>
+                                                 </div>
+                                             </div>
+                                         </li>
+                                            ))}
+
+
+                                         
                                         </ul>
                                     </div>
                                 </div>

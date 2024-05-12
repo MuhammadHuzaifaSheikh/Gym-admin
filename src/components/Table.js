@@ -81,7 +81,9 @@ const Table = ({ data, pagination, onPageChange, reloadUsers, type }) => {
       });
     }
   };
-  let HandledeteUser = async (id) => {
+  let HandleDeleteUser = async (id) => {
+
+    console.log("ssdsdsdsd",id)
     try {
       const response = await axios.put(
         `${App_host}/user/deleteUser`,
@@ -97,7 +99,7 @@ const Table = ({ data, pagination, onPageChange, reloadUsers, type }) => {
       console.log("also got the response ", response);
 
       if (response?.data?.success) {
-        toast.success("User registered successfully!", {
+        toast.success("User Deleted successfully!", {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -283,7 +285,7 @@ const Table = ({ data, pagination, onPageChange, reloadUsers, type }) => {
             <>
               {data.map((user) => {
                 {
-                  console.log("---------------------------------------", user);
+                  console.log("datauze", user);
                 }
 
                 return (
@@ -305,7 +307,7 @@ const Table = ({ data, pagination, onPageChange, reloadUsers, type }) => {
                       <td>{user.email}</td>
                     )}
                     <td className="" style={{}}>
-                      {new Date(user.created_at).toDateString()}
+                      {new Date(user.createdAt).toDateString()}
                     </td>
                     <td className="" style={{}}>
                       <span
@@ -384,9 +386,8 @@ const Table = ({ data, pagination, onPageChange, reloadUsers, type }) => {
                             <a
                               className="dropdown-item text-danger delete-record cursor-pointer"
                               onClick={() =>
-                                HandledeteUser(
-                                  type,
-                                  type === "jim"
+                                HandleDeleteUser(
+                                type === "jim"
                                     ? user.Owner.toString()
                                     : user._id.toString()
                                 )
