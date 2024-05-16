@@ -63,7 +63,7 @@ function AuthenticatedApp() {
       <Routes>
         <Route path="/" element={<DashBoard />} />
         <Route path="/gyms" element={<NewGymRequests />} />
-        <Route path="/gym-users" element={<GymUsers />} />
+        <Route path="/gym-users" element={<NewGymRequests adminGymUsers />} />
         <Route path="/add-new-jim" element={<AddNewJim />} />
         <Route path="/add-new-member" element={<AddnewMember />} />
         <Route path="/new-request" element={<NewRequest />} />

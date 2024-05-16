@@ -22,22 +22,34 @@ const Otherjims = () => {
     }
     useEffect(() => {
         const fetchJim = async () => {
-            let user  = JSON.parse(localStorage.getItem('user'))
+            let user = JSON.parse(localStorage.getItem('user'));
             try {
                 const response = await axios.get(`${App_host}/Jim/getAllBusinessLocation?page=${currentPage}&limit=${itemsPerPage}`);
-                const filteredGym = response.data.data.businessLocations.results.filter((item)=>user.BusinessLocation.some((v)=>v.Gym?._id !==item?._id))
-                setJim(filteredGym);
+    
+                // Extract the list of gym IDs that have packages
+                const gymsWithPackages = response.data.data.packages.map(pkg => pkg._id);
+    
+                // Filter out gyms that have packages
+                const filteredGym = response.data.data.businessLocations.results.filter((item) =>
+                    gymsWithPackages.includes(item._id)
+                );
+
+                const otherGyms = filteredGym.filter((item)=>user.BusinessLocation.some((v)=>v.Gym?._id !==item?._id))
+                setJim(otherGyms);
+    
                 setTotalPages(response.data.data.businessLocations.totalPages);
-                console.log('user',user?.BusinessLocation)
-                console.log('gym',response.data.data.businessLocations.results)
+    
+                console.log('user', user?.BusinessLocation);
+                console.log('packages', response.data.data);
     
             } catch (error) {
                 console.error("Error fetching gym data:", error);
             }
         };
-
+    
         fetchJim();
     }, [currentPage]); // Reload when currentPage changes
+    
 
     const handlePageChange = (page) => {
         setCurrentPage(page);

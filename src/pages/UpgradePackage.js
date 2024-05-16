@@ -156,7 +156,7 @@ const UpgradePackage = () => {
                             <div className="row mb-3">
                                 <div className="col-12 col-lg-8 mx-auto text-center mb-3">
                                     <h4 className="mt-2">Thank You! 😇</h4>
-                                    <p>Your secussfully subscribed the Package</p>
+                                    <p>Your successfully subscribed the Package</p>
                                     <p>Thank you! We've recieved your order confirmation. Thanks!</p>
                                     {/* <p><span className="fw-medium"><i className="ti ti-clock me-1"></i> Time placed:&nbsp;</span> </p> */}
                                 </div>

@@ -4,7 +4,7 @@ import axios from "axios";
 import { useLocation } from "react-router-dom";
 import { App_host } from "../Data";
 
-const NewGymRequests = ({ isRequests }) => {
+const NewGymRequests = ({ isRequests ,adminGymUsers}) => {
   const [userData, setUserData] = useState([]);
   const [pagination, setPagination] = useState({});
   const [page, setPage] = useState(1);
@@ -68,7 +68,7 @@ const NewGymRequests = ({ isRequests }) => {
   return (
     <div className="container-xxl flex-grow-1 container-p-y">
       <div className="card">
-        <h5 className="card-header"> {isRequests ? "Gym Requests" : "All Gyms"} </h5>
+        <h5 className="card-header"> {  adminGymUsers?"ALl Gym Users":  isRequests ? "Gym Requests" : "All Gyms"}  </h5>
         <div className="card-datatable">
           <div className="row">
             <div className="col-6 col-sm-6 col-md-6">
@@ -104,7 +104,9 @@ const NewGymRequests = ({ isRequests }) => {
               </div>
             </div>
           </div>
-          <div className="row mt-3">
+
+
+          {!adminGymUsers&&   <div className="row mt-3">
             <div className="col">
               <select
                 className="form-select"
@@ -119,7 +121,8 @@ const NewGymRequests = ({ isRequests }) => {
                 <option value="unpaid">Unpaid</option>
               </select>
             </div>
-          </div>
+          </div>}
+        
           <div className="overflow-auto">
             <Table
               data={userData}
@@ -127,6 +130,8 @@ const NewGymRequests = ({ isRequests }) => {
               onPageChange={handlePageChange}
               reloadUsers={fetchUsers}
               type={"jim"}
+              adminGymUsers={adminGymUsers}
+
             />
           </div>
         </div>

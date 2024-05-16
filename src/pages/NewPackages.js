@@ -140,11 +140,14 @@ const NewPackages = () => {
 
 
     const daysPrgress = ()=>{
-       const currentDAys= lastDateMemo?.daysRemaining-29;
+       const currentDAys=30- lastDateMemo?.daysRemaining;
        const totalDays = 30
        const percent = (currentDAys/totalDays)*100;
        return  Math.round(percent) ;
     }
+
+
+    console.log("lastDateMemo?.daysRemaining",daysPrgress())
     return (
         <>
             <div className="container-xxl flex-grow-1 container-p-y p-0">
@@ -193,12 +196,12 @@ const NewPackages = () => {
                                             <div className="plan-statistics">
                                                 <div className="d-flex justify-content-between">
                                                     <h6 className="mb-2">Days</h6>
-                                                    <h6 className="mb-2">{ lastDateMemo?.daysRemaining -29} of 30 Days</h6>
+                                                    <h6 className="mb-2">{ 30 -lastDateMemo?.daysRemaining } of 30 Days</h6>
                                                 </div>
                                                 <div className="progress">
                                                     <div className="progress-bar" style={{ width: `${daysPrgress().toFixed()}%` }} role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
                                                 </div>
-                                                <p className="mt-1 mb-0">{lastDateMemo?.daysRemaining  -( lastDateMemo?.daysRemaining -29)} days remaining until your plan requires update</p>
+                                                <p className="mt-1 mb-0">{lastDateMemo?.daysRemaining  } days remaining until your plan requires update</p>
                                             </div>
                                         </div>
                                         {!user.isJimAdmin && <div className="col-12">
