@@ -49,7 +49,7 @@ const PackagesPlaneModel = ({ showPackages, handleShowpackage, activePackage, ha
 
 
     const getPackagesList = async () => {
-        let user  = JSON.parse(localStorage.getItem("user"))
+        let user = JSON.parse(localStorage.getItem("user"))
 
         try {
             const response = await axios.get(`${App_host}/packages/getPackages`, {
@@ -65,18 +65,18 @@ const PackagesPlaneModel = ({ showPackages, handleShowpackage, activePackage, ha
             let { results, ...otherPages } = response.data.data
 
             // customPackageUsers[string] in the results user id
-            
 
-            console.log("rrrrrrrrrrrrrrrr", {results,user:user?._id})
 
-            if(!user?.isJimAdmin){
+            console.log("rrrrrrrrrrrrrrrr", { results, user: user?._id })
 
-                let filterPackagesMineCustom= results.filter((item)=> item?.type ==='custom'&& item?.customPackageUsers.includes(user?._id)) // only show mine and public packages
-                let filterPackagesNotMineOther= results.filter((item)=> item?.type !=='custom') // only show mine and public packages
-    
-                SetPackagesData([...filterPackagesMineCustom,...filterPackagesNotMineOther]);
+            if (!user?.isJimAdmin) {
+
+                let filterPackagesMineCustom = results.filter((item) => item?.type === 'custom' && item?.customPackageUsers.includes(user?._id)) // only show mine and public packages
+                let filterPackagesNotMineOther = results.filter((item) => item?.type !== 'custom') // only show mine and public packages
+
+                SetPackagesData([...filterPackagesMineCustom, ...filterPackagesNotMineOther]);
             }
-            else{
+            else {
                 SetPackagesData(results);
             }
 
@@ -100,7 +100,7 @@ const PackagesPlaneModel = ({ showPackages, handleShowpackage, activePackage, ha
 
     console.log("packagesData", packagesData)
 
-     
+
 
 
     return (
@@ -115,19 +115,17 @@ const PackagesPlaneModel = ({ showPackages, handleShowpackage, activePackage, ha
                             <button type="button" className="btn-close" onClick={handleShowpackage}></button>
                             {/* Pricing Plans */}
                             <div className="py-0 rounded-top">
-                                <h2 className="text-center mb-2">Pricing Plans</h2>
+                                <h2 className="text-center mb-2">Pricing Psslans</h2>
                                 {/* Rest of your code... */}
                                 <div className="row mx-0 gy-3">
                                     {packagesData.length > 0 ? (
                                         packagesData.map((item) => (
-                                            <div className="col-xl mb-md-0 mb-4" key={item._id}>
+                                            <div className="col-lg-4 col-md-6 mb-md-0 mb-4" key={item._id}>
                                                 <div className="card border-primary border shadow-none">
                                                     <div className="card-body position-relative">
                                                         {/* Rest of your card content... */}
-
-                                                   
                                                         <h3 className="card-title text-center text-capitalize mb-1">{item.name}</h3>
-                                                        <p className="text-center"> {item?.type ==='custom'?"For Custom User" : "For Gym users"}  </p>
+                                                        <p className="text-center">{item?.type === 'custom' ? "For Custom User" : "For Gym users"}</p>
                                                         <div className="text-center h-px-100 mb-2">
                                                             <div className="d-flex justify-content-center">
                                                                 <sup className="h6 pricing-currency mt-3 mb-0 me-1 text-primary"><FontAwesomeIcon icon={faIndianRupeeSign} /></sup>
@@ -140,14 +138,13 @@ const PackagesPlaneModel = ({ showPackages, handleShowpackage, activePackage, ha
                                                         </div>
                                                         {!user.isJimAdmin && (
                                                             <Link to={activePackage?._id === item?._id ? "#" : `/checkoutPackage?id=${item._id.toString()}`}>
-                                                                <button disabled={activePackage?._id === item?._id} type="button" className="btn  btn-primary d-grid w-100 mt-3" data-bs-dismiss="modal"> {activePackage?._id === item?._id ? "Current Plan" : "Upgrade"} </button>
+                                                                <button disabled={activePackage?._id === item?._id} type="button" className="btn btn-primary d-grid w-100 mt-3" data-bs-dismiss="modal">{activePackage?._id === item?._id ? "Current Plan" : "Upgrade"}</button>
                                                             </Link>
                                                         )}
                                                         {/* Edit button */}
                                                         {user.isJimAdmin && <button className="btn btn-sm btn-outline-primary position-absolute top-0 end-0 m-2" onClick={() => handleEditPackage(item._id)}>
                                                             <FontAwesomeIcon icon={faEdit} />
                                                         </button>}
-
                                                     </div>
                                                 </div>
                                             </div>

@@ -7,7 +7,7 @@ import { App_host } from "../Data";
 import UserDetails from "./UserDetail";
 import { string } from "yup";
 
-const Table = ({ data, pagination, onPageChange, reloadUsers, type, adminGymUsers }) => {
+const Table = ({ data, pagination, onPageChange, reloadUsers, type, adminGymUsers,all }) => {
   const { page, totalPages } = pagination;
   let token = localStorage.getItem("token");
   const [showDetails, setShowDetails] = useState(false);
@@ -444,7 +444,7 @@ const Table = ({ data, pagination, onPageChange, reloadUsers, type, adminGymUser
                               'status'
                             )}
                           >
-                            {user.status == "active" ? "inactive" : "Approve"}
+                            {user.status == "active" ? "inactive" :  all?"Active": "Approve"}
                           </a>
                           <div className="dropdown-divider"></div>
 

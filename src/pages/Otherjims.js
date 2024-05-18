@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios';
 import { App_host } from '../Data';
 import GymsPopup from '../components/GymsPopup';
-
+import gymImage from "../assets/gym.jpeg"
 const Otherjims = () => {
     const [jim, setJim] = useState([]);
     const [totalPages, setTotalPages] = useState(0);
@@ -96,7 +96,7 @@ const Otherjims = () => {
                                     <div className="card h-100">
                                         {data.images.length > 0 ? (
                                             <img
-                                                src={data.images[0]}
+                                                src={ gymImage|| data.images[0]}
                                                 className="card-img-top"
                                                 alt="Gym"
                                                 style={{ width: '100%', height: '200px', objectFit: 'cover' }}

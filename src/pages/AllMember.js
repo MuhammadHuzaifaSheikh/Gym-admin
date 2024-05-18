@@ -95,7 +95,7 @@ const AllMember = () => {
                         </div>
                     </div >
                     <div className="overflow-auto">
-                        <Table data={userData} pagination={pagination} onPageChange={handlePageChange} reloadUsers={fetchUsers} />
+                        <Table all data={userData} pagination={pagination} onPageChange={handlePageChange} reloadUsers={fetchUsers} />
                     </div>
                 </div>
             </div>

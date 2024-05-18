@@ -47,7 +47,7 @@ const Gyms = () => {
                   </div>
                 </div>
               </div>
-              <Table />
+              <Table all/>
             </div>
           </div>
         </div>

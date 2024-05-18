@@ -2,8 +2,12 @@ import React, { useEffect, useState } from 'react'
 import { json, useNavigate } from 'react-router-dom';
 import UserDetails from '../UserDetail';
 import axios from 'axios';
-import { App_host } from '../../Data';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
+import { App_host } from '../../Data';
+import {
+    faUser
+  } from "@fortawesome/free-solid-svg-icons";
 const TopNav = ({ handleShowNav }) => {
 
 
@@ -184,8 +188,9 @@ const TopNav = ({ handleShowNav }) => {
                         {/* User */}
                         <li className="nav-item navbar-dropdown dropdown-user dropdown">
                             <a className="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
-                                <div className="avatar avatar-online">
-                                    <img src={user?.images} alt className="h-70 rounded-circle" />
+                                <div className="d-flex justify-content-center align-items-center avatar-online">
+                                    {user?.isAdmin ?  <FontAwesomeIcon icon={faUser} className="h-90 rounded-circle" /> :  <img src={user?.images} alt className="h-70 rounded-circle" /> }
+                                  
                                 </div>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end">
@@ -193,8 +198,8 @@ const TopNav = ({ handleShowNav }) => {
                                     <a class="dropdown-item" href="pages-account-settings-account.html">
                                         <div class="d-flex">
                                             <div class="flex-shrink-0 me-3">
-                                                <div class="avatar avatar-online">
-                                                    <img src={user?.images} alt className="h-70 rounded-circle" />
+                                                <div class="d-flex justify-content-center align-items-center  avatar-online">
+                                                {user?.isAdmin ?  <FontAwesomeIcon icon={faUser} className="h-90 rounded-circle" /> :  <img src={user?.images} alt className="h-70 rounded-circle" /> }
                                                 </div>
                                             </div>
                                             <div class="flex-grow-1">
