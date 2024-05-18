@@ -12,7 +12,7 @@ import NewPackages from './pages/NewPackages';
 import UpgradePackage from './pages/UpgradePackage';
 import AdminPackages from './pages/AdminPackages';
 import AdminContact from './pages/AdminContact';
-
+import Attendance from './pages/Attendance';
 // Lazy-loaded components
 const DashBoard = React.lazy(() => import('./pages/DashBoard'));
 const Gyms = React.lazy(() => import('./pages/Gyms'));
@@ -23,7 +23,6 @@ const Earning = React.lazy(() => import('./pages/Earning'));
 const Login = React.lazy(() => import('./pages/Login'));
 const NoPageFound = React.lazy(() => import('./components/shared/NoPageFound'));
 const Otherjims = React.lazy(() => import('./pages/Otherjims'));
-
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -70,6 +69,7 @@ function AuthenticatedApp() {
         <Route path="/new-gym-request" element={<NewGymRequests  isRequests/>} />
         <Route path="/all-member" element={<AllMember />} />
         <Route path="/Other-jims" element={<Otherjims />} />
+        <Route path="/attendance" element={<Attendance />} />
         <Route path="/earning" element={<Earning />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/admin-contact" element={<AdminContact />} />

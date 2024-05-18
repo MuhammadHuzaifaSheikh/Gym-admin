@@ -47,18 +47,52 @@ const GymsPopup = ({ showPackages, handleShowpackage, gymid }) => {
                     token,
                 },
             });
-            console.log("rrrrrrrrrrrrrrrr", response)
+            console.log("rrrrrrrrrrrrrrrr", response);
+    
+            let { results, ...otherPages } = response.data.data;
+    
+            // Fetch user data for custom packages
+            const fetchUserData = async (userId) => {
+                console.log("userId",userId)
+                try {
+                    const userResponse = await axios.get(`${App_host}/getOne/${userId}`, {
+                        headers: {
+                            token,
+                        },
+                    });
 
-            let { results, ...otherPages } = response.data.data
-            SetPackagesData(results);
+                    console.log("userResponse",userResponse.data)
+                    return userResponse.data.data; // Adjust based on the actual response structure
+                } catch (error) {
+                    console.error(`Error fetching user data for user ID ${userId}:`, error);
+                    return null;
+                }
+            };
+    
+            // Iterate over results to fetch user data for custom packages
+            const updatedResults = await Promise.all(
+                results.map(async (pkg) => {
+                    if (pkg?.type === 'custom' && pkg?.customPackageUsers?.length > 0) {
+                        const userId = pkg.customPackageUsers[0]; // Extract the user ID
+                        const userData = await fetchUserData(userId);
+                        return { ...pkg, userData };
+                    }
+                    return pkg;
+                })
+            );
+    
+            SetPackagesData(updatedResults);
             setTotalPages(otherPages.totalPages);
         } catch (error) {
             console.error('Error fetching users:', error);
         }
-    }
+    };
     useEffect(() => {
         getPackagesList()
     }, [])
+
+
+    console.log("packagesData",packagesData)
     let handleSubitform = async (packageId) => {
         try {
 
@@ -69,10 +103,13 @@ const GymsPopup = ({ showPackages, handleShowpackage, gymid }) => {
                 package: packageId
             }
 
+
             const response = await axios.post(`${App_host}/user/addUser`, formData, {
                 headers: {
                 },
             });
+            console.log("response",response)
+
 
             if (response?.data?.success) {
                 toast.success('User registered successfully!', {
@@ -134,11 +171,9 @@ const GymsPopup = ({ showPackages, handleShowpackage, gymid }) => {
                                                         <div className="card-body position-relative">
                                                             {/* Rest of your card content... */}
 
-                                                            <div className="my-3 pt-2 text-center">
-                                                                <img src="../assets/img/illustrations/page-pricing-standard.png" alt="Standard Image" height="140" />
-                                                            </div>
+                                                            
                                                             <h3 className="card-title text-center text-capitalize mb-1">{item.name}</h3>
-                                                            <p className="text-center">For Gym users</p>
+                                                            <p className="text-center">  {item?.type==="custom"?"For Custom User":" For Gym users"}</p>
                                                             <div className="text-center h-px-100 mb-2">
                                                                 <div className="d-flex justify-content-center">
                                                                     <sup className="h6 pricing-currency mt-3 mb-0 me-1 text-primary"><FontAwesomeIcon icon={faIndianRupeeSign} /></sup>

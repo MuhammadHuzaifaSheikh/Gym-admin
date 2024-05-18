@@ -22,14 +22,36 @@ const [gymUsers,setGymUsers] = useState()
                 },
             });
 
+
+            console.log("getDashboardDetails",response.data.data)
+
             const responseGymUsers = await axios.get(`${App_host}/earning/GymwithLeastandMostUsers`, {
                 headers: {
                     token,
                 },
             });
 
+
+            const getGyms = await axios.get(
+                `${App_host}/Jim/getAllBusinessLocation`,
+                {
+                  params: {
+                   
+                    status: 'pending',
+                    
+                  },
+                  headers: {
+                    token,
+                  },
+                }
+              );
+        
+              let { businessLocations, ...otherPages } = getGyms.data.data;
+
+              console.log( "businessLocations",businessLocations)
+
             setGymUsers(responseGymUsers?.data)
-            setDashboardData(response.data.data);
+            setDashboardData({...response.data.data,newRequest:businessLocations?.results.length});
         } catch (error) {
             console.error('Error fetching users:', error);
         }

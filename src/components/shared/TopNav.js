@@ -5,13 +5,31 @@ import axios from 'axios';
 import { App_host } from '../../Data';
 
 const TopNav = ({ handleShowNav }) => {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     const [topNavHeading, setTopNavHeading] = useState('');
     const [showDetails, setShowDetails] = useState(false)
     const [detailsData, setDetailsData] = useState(null)
     const [notification, setNotification] = useState([])
     const [count, setcount] = useState([])
 
-    const gymDetail = JSON.parse(localStorage.getItem('gymDetail'));
+
     const user = JSON.parse(localStorage.getItem('user'));
     // console.log("const user = JSON.parse(localStorage.getItem('user'))", user)
     const role = localStorage.getItem('role');
@@ -19,14 +37,19 @@ const TopNav = ({ handleShowNav }) => {
     const navigate = useNavigate();
 
     useEffect(() => {
+
+        if(topNavHeading) return
+    const gymDetailLocal = localStorage.getItem('gymDetail')
+    if(gymDetailLocal==='undefined') return
+    const gymDetail =gymDetailLocal? JSON.parse(gymDetailLocal):null;
         getnotifications()
         if (user) {
             if (user?.isAdmin) {
                 setTopNavHeading('Admin');
             } else if (user.isJimAdmin) {
-                setTopNavHeading(gymDetail.name);
+                setTopNavHeading(gymDetail?.name);
             } else {
-                setTopNavHeading(gymDetail.name);
+                setTopNavHeading(gymDetail?.name);
             }
         }
     }, [user]);

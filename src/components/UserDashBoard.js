@@ -14,31 +14,12 @@ const UserDashBoard = () => {
   const [totalUser, settotalUser] = useState(0);
   const [timerInterval, setTimerInterval] = useState(null);
   const [attendanceLogs, setAttendanceLogs] = useState(); // State for attendance logs
-  const [attendanceData, setAttendanceData] = useState([]); // State for attendance logs
 
   let user = JSON.parse(localStorage.getItem("user"));
   const token = localStorage.getItem("token");
   const activegym = localStorage.getItem("activegym");
 
-  const getAttendance = async () => {
-    try {
-      const response = await axios.get(
-        `${App_host}/attendence/getAttendence?jimId=${activegym}`,
-        {
-          headers: {
-            token: token,
-          },
-        }
-      );
 
-      const attendanceData = response?.data?.data;
-      console.log("attendanceData", attendanceData);
-      setAttendanceData(attendanceData)
-
-    } catch (error) {
-      console.error("Error fetching attendance:", error);
-    }
-  };
 
   const startTimer = (initialTimeInSeconds) => {
     stopTimer(); // Stop any existing timer before starting a new one
@@ -196,68 +177,17 @@ const UserDashBoard = () => {
   };
 
 
-  useEffect(() => {
-    // Add event listeners when component mounts
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    window.addEventListener("unload", handleUnload);
-
-    // Cleanup function
-    return () => {
-      // Remove event listeners when component unmounts
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-      window.removeEventListener("unload", handleUnload);
-      stopTimer(); // Clean up timer on component unmount
-    };
-  }, []);
-
-  const handleBeforeUnload = (event) => {
-    // Call your attendance action function before the page unloads
-    stopTimer();
-
-    // Return the standard message to show the browser's confirmation dialog
-    event.preventDefault();
-    event.returnValue = "";
-  };
-
-  const handleUnload = (event) => {
-    // Clean up any necessary resources before the page unloads completely
-    if (event) {
-      // Handle unload action if it's not a cancel event
-      stopTimer();
-    }
-  };
 
 
 
 
 
-  const CheckInTable = ({ title,field }) => {
-    // If no data is provided, use dummy data
 
-    return (
-      <div className="table-responsive">
-        <table className="table table-bordered">
-          <thead>
-            <tr>
-              <th>{title}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {attendanceData.map((item) => (
-              <tr key={item._id}>
-                <td>{ new Date(item[field]).toLocaleTimeString()   }</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    );
-  };
+
 
 
 
   useEffect(() => {
-    getAttendance();
     getActiveUser();
 
     return () => {
@@ -338,16 +268,8 @@ const UserDashBoard = () => {
             </div>
             <div className="col-12 col-xl-12 mb-4">
               <div className="row">
-                <div className="col-3">
-                  <h5 className="m-0 card-title mb-3">Check In Time</h5>
-                  <CheckInTable title="Check In Time" field="punchInTime" />
-                </div>
-                <div className="col-6 col-md-6 mx-auto">
+              <div className="col-12 col-md-12 mx-auto">
                   <PeakHoursChart />
-                </div>
-                <div className="col-3">
-                  <h5 className="m-0 card-title mb-3">Check Out Time</h5>
-                  <CheckInTable title="Check Out Time" field="punchOutTime" />
                 </div>
               </div>
             </div>

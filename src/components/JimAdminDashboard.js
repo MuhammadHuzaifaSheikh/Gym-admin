@@ -14,6 +14,7 @@ import PeakHoursChart from "./shared/PeakHoursChart";
 
 const JimAdminDashboard = () => {
   const [activeUser, setActiveUser] = useState(0);
+  const [pendingUser, setPendinguser] = useState(0);
   const [totalUser, settotalUser] = useState(0);
   const [dashBoardData, setDashboardData] = useState();
 
@@ -22,6 +23,23 @@ const JimAdminDashboard = () => {
 
   let user = JSON.parse(localStorage.getItem("user"));
   let getActiveUser = async () => {
+
+
+    const response = await axios.get(`${App_host}/user/getAllBusinessUser`, {
+      params: {
+          BusinessLocation: activegym
+      },
+      headers: {
+          token,
+      },
+  });
+
+
+
+  console.log(" getAllBusinessUser ",response.data?.data)
+
+
+    
     const activeuser = await axios.get(`${App_host}/attendence/getActiveUser`, {
       params: {
         jimId: activegym,
@@ -31,9 +49,9 @@ const JimAdminDashboard = () => {
       },
     });
     if (activeuser) {
-      console.log();
-      settotalUser(activeuser.data.data.total_users);
-      setActiveUser(activeuser.data.data.active_users);
+      settotalUser(response.data?.data.results.length);
+      setActiveUser(response.data?.data.results.filter((item)=>item.status==='active').length);
+      setPendinguser(response.data?.data.results.filter((item)=>item.status==='pending').length);
     }
   };
 
@@ -131,7 +149,7 @@ const JimAdminDashboard = () => {
                           <FontAwesomeIcon icon={faUserClock} />{" "}
                         </span>
                       </div>
-                      <h4 className="ms-1 mb-0">{dashBoardData?.newRequest}</h4>
+                      <h4 className="ms-1 mb-0">{pendingUser}</h4>
                     </div>
                     <p className="mb-1">New Requests</p>
                   </div>
@@ -201,21 +219,14 @@ const JimAdminDashboard = () => {
                 <div className="col-12 ">
                   <h5 className="m-0 card-title">Peak Hours</h5>
                 </div>
-                <div
-                  id="col-12"
-                  className="mt-n1 col-12 col-md-6 mx-auto"
-                  style={{
-                    // width: "100%",
-                    margin: "auto",
-                    marginTop: "100px",
-                  }}
-                >
+                <div className="col-12 col-xl-12 mb-4">
+              <div className="row">
+              <div className="col-12 col-md-12 mx-auto">
                   <PeakHoursChart />
                 </div>
-                {/* </div>
-
-                                    </div>
-                                </div> */}
+              </div>
+            </div>
+        
               </div>
             </div>
           </div>

@@ -3,7 +3,7 @@ import Layout from '../components/shared/Layout';
 import MainDashboard from '../components/MainDashboard';
 import JimAdminDashboard from '../components/JimAdminDashboard';
 import UserDashBoard from '../components/UserDashBoard';
-
+import Otherjims from './Otherjims';
 const Dashboard = () => {
   const [role, setRole] = useState('');
   useEffect(() => {
@@ -21,6 +21,13 @@ const Dashboard = () => {
       case 'jimAdmin':
         return <JimAdminDashboard />;
       case 'user':
+      const gymDetail=  localStorage.getItem('gymDetail')
+
+
+      if(gymDetail==='undefined') return <Otherjims/>
+       
+
+
         return <UserDashBoard />;
       default:
         return <div>Loading...</div>;

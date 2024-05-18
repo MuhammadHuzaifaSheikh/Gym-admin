@@ -17,6 +17,7 @@ import {
   faUserClock,
   faUserPlus,
   faUsers,
+  faCalendar
 } from "@fortawesome/free-solid-svg-icons";
 import { Link, useLocation } from "react-router-dom";
 import logo from "../../assets/logo.png";
@@ -41,6 +42,10 @@ const Sidebar = ({ handleShowNav }) => {
     });
   }
   // Define menu items based on user roles
+
+  const gymDetail=  localStorage.getItem('gymDetail')
+
+
   const menuItems = {
     admin: [
       { label: "Dashboard", link: "/", icon: faHome },
@@ -66,6 +71,8 @@ const Sidebar = ({ handleShowNav }) => {
       { label: "Packages", link: "/newpackages", icon: faCubes },
       { label: "Earnings", link: "/earning", icon: faIndianRupeeSign },
       { label: "Contact Support", link: "/contact", icon: faPhoneVolume },
+      // { label: "Attendance", link:  "/attendance", icon: faCalendar },
+
     ],
     user: [
       {
@@ -74,8 +81,9 @@ const Sidebar = ({ handleShowNav }) => {
         icon: faDumbbell,
       },
       { label: "Dashboard", link: "/", icon: faHome },
-      { label: "Packages", link: "/newpackages", icon: faCubes },
-      { label: "Other Gyms", link: "/Other-jims", icon: faCloud },
+      { label: "Packages", link: gymDetail==='undefined'?"#": "/newpackages", icon: faCubes },
+      { label: "Other Gyms", link:  gymDetail==='undefined'?"#":"/Other-jims", icon: faCloud },
+      { label: "Attendance", link:  gymDetail==='undefined'?"#":"/attendance", icon: faCalendar },
     ],
   };
 

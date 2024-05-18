@@ -59,7 +59,14 @@ const PackagesPlaneModel = ({ showPackages, handleShowpackage, activePackage, ha
                 },
             });
 
+
+
+
             let { results, ...otherPages } = response.data.data
+
+            // customPackageUsers[string] in the results user id
+            
+
             console.log("rrrrrrrrrrrrrrrr", {results,user:user?._id})
 
             if(!user?.isJimAdmin){
@@ -93,7 +100,7 @@ const PackagesPlaneModel = ({ showPackages, handleShowpackage, activePackage, ha
 
     console.log("packagesData", packagesData)
 
-
+     
 
 
     return (
@@ -118,11 +125,9 @@ const PackagesPlaneModel = ({ showPackages, handleShowpackage, activePackage, ha
                                                     <div className="card-body position-relative">
                                                         {/* Rest of your card content... */}
 
-                                                        <div className="my-3 pt-2 text-center">
-                                                            <img src="../assets/img/illustrations/page-pricing-standard.png" alt="Standard Image" height="140" />
-                                                        </div>
+                                                   
                                                         <h3 className="card-title text-center text-capitalize mb-1">{item.name}</h3>
-                                                        <p className="text-center">For Gym users</p>
+                                                        <p className="text-center"> {item?.type ==='custom'?"For Custom User" : "For Gym users"}  </p>
                                                         <div className="text-center h-px-100 mb-2">
                                                             <div className="d-flex justify-content-center">
                                                                 <sup className="h6 pricing-currency mt-3 mb-0 me-1 text-primary"><FontAwesomeIcon icon={faIndianRupeeSign} /></sup>
