@@ -84,9 +84,9 @@ const Sidebar = ({ handleShowNav,setTopHeading }) => {
         icon: faDumbbell,
       },
       { label: "Dashboard", link: "/", icon: faHome },
-      { label: "Packages", link: gymDetail==='undefined' ||user.BusinessLocation.find((item)=>item?.Gym?._id===activegym)   ?"#": "/newpackages", icon: faCubes },
+      { label: "Packages", link: gymDetail==='undefined' ||!user.BusinessLocation.find((item)=>item?.Gym?._id===activegym)   ?"#": "/newpackages", icon: faCubes },
       { label: "Other Gyms", link:  gymDetail==='undefined' ?"#":"/Other-jims", icon: faCloud },
-      { label: "Attendance", link:  gymDetail==='undefined'||user.BusinessLocation.find((item)=>item?.Gym?._id===activegym) ?"#":"/attendance", icon: faCalendar },
+      { label: "Attendance", link:  gymDetail==='undefined'||!user.BusinessLocation.find((item)=>item?.Gym?._id===activegym) ?"#":"/attendance", icon: faCalendar },
     ],
   };
 
