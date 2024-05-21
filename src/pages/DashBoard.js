@@ -12,7 +12,7 @@ const Dashboard = () => {
       setRole(storedRole);
     }
   }, []);
-  console.log("rolerolerolerolerolerole",role)
+  console.log("rolerolerolerolerolerole", role)
 
   const renderDashboard = () => {
     switch (role) {
@@ -21,14 +21,19 @@ const Dashboard = () => {
       case 'jimAdmin':
         return <JimAdminDashboard />;
       case 'user':
-      const gymDetail=  localStorage.getItem('gymDetail')
+        const gymDetail = localStorage.getItem('gymDetail')
+        let user = JSON.parse(localStorage.getItem("user"));
+        let activegym = localStorage.getItem("activegym");
+
+        if (gymDetail === 'undefined') return <Otherjims />
+        const gym = user.BusinessLocation.find((item) => item?.Gym?._id === activegym)
+        if (gym?.status === 'active') return <UserDashBoard />
 
 
-      if(gymDetail==='undefined') return <Otherjims/>
-       
+        return <div className='container w-full  d-flex justify-content-center align-items-center' style={{ height: '100%' }}>
+          <h1>Your request is under review </h1>
+        </div>
 
-
-        return <UserDashBoard />;
       default:
         return <div>Loading...</div>;
     }
@@ -36,11 +41,11 @@ const Dashboard = () => {
 
   return (
     <>
-        {role ? (
-          renderDashboard()
-        ) : (
-          <div>Please log in to view this page.</div>
-        )}
+      {role ? (
+        renderDashboard()
+      ) : (
+        <div>Please log in to view this page.</div>
+      )}
     </>
   );
 };

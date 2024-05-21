@@ -8,12 +8,13 @@ const Layout = ({ children }) => {
   let handleShowNav = () => {
     setShownav(!shownav);
   };
+  const [topHeading,setTopHeading] = useState("")
   return (
     <>
       <Wrapper shownav={shownav}>
-        <Sidebar handleShowNav={handleShowNav} />
+        <Sidebar setTopHeading={setTopHeading} handleShowNav={handleShowNav} />
         <div className="layout-page">
-          <TopNav handleShowNav={handleShowNav} />
+          <TopNav topHeading={topHeading} setTopHeading={setTopHeading} handleShowNav={handleShowNav} />
           <div class="content-wrapper">{children}</div>
         </div>
       </Wrapper>

@@ -8,7 +8,7 @@ import { App_host } from '../../Data';
 import {
     faUser
   } from "@fortawesome/free-solid-svg-icons";
-const TopNav = ({ handleShowNav }) => {
+const TopNav = ({ handleShowNav ,topHeading,setTopHeading}) => {
 
 
 
@@ -27,7 +27,6 @@ const TopNav = ({ handleShowNav }) => {
 
 
 
-    const [topNavHeading, setTopNavHeading] = useState('');
     const [showDetails, setShowDetails] = useState(false)
     const [detailsData, setDetailsData] = useState(null)
     const [notification, setNotification] = useState([])
@@ -42,18 +41,18 @@ const TopNav = ({ handleShowNav }) => {
 
     useEffect(() => {
 
-        if(topNavHeading) return
+        if(topHeading) return
     const gymDetailLocal = localStorage.getItem('gymDetail')
     if(gymDetailLocal==='undefined') return
     const gymDetail =gymDetailLocal? JSON.parse(gymDetailLocal):null;
         getnotifications()
         if (user) {
             if (user?.isAdmin) {
-                setTopNavHeading('Admin');
+                setTopHeading('Admin');
             } else if (user.isJimAdmin) {
-                setTopNavHeading(gymDetail?.name);
+                setTopHeading(gymDetail?.name);
             } else {
-                setTopNavHeading(gymDetail?.name);
+                setTopHeading(gymDetail?.name);
             }
         }
     }, [user]);
@@ -130,7 +129,7 @@ const TopNav = ({ handleShowNav }) => {
                     </a>
                 </div>
                 <span className="app-brand-text demo menu-text fw-bold">
-                    {topNavHeading}
+                    {topHeading}
                 </span>
                 <div className="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
                     <ul className="navbar-nav flex-row align-items-center ms-auto">
@@ -139,7 +138,8 @@ const TopNav = ({ handleShowNav }) => {
                             {(user?.isAdmin || user?.isJimAdmin) &&
                                 (<a className="nav-link dropdown-toggle hide-arrow" onClick={markasRead} href="javascript:void(0);" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
                                     <i className="ti ti-bell ti-md"></i>
-                                    <span className="badge bg-danger rounded-pill badge-notifications">{count}</span>
+                                    {count>0&& <span className="badge bg-danger rounded-pill badge-notifications">{count}</span>}
+                                    
                                 </a>)}
                             <ul className="dropdown-menu dropdown-menu-end py-0">
                                 <li className="dropdown-menu-header border-bottom">
@@ -189,7 +189,7 @@ const TopNav = ({ handleShowNav }) => {
                         <li className="nav-item navbar-dropdown dropdown-user dropdown">
                             <a className="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
                                 <div className="d-flex justify-content-center align-items-center avatar-online">
-                                    {user?.isAdmin ?  <FontAwesomeIcon icon={faUser} className="h-90 rounded-circle" /> :  <img src={user?.images} alt className="h-70 rounded-circle" /> }
+                                    {user?.isAdmin ?  <FontAwesomeIcon icon={faUser} className="h-90 rounded-circle" /> :  <img width={50} height={50} src={user?.images} alt className="h-70 rounded-circle" /> }
                                   
                                 </div>
                             </a>
@@ -199,12 +199,12 @@ const TopNav = ({ handleShowNav }) => {
                                         <div class="d-flex">
                                             <div class="flex-shrink-0 me-3">
                                                 <div class="d-flex justify-content-center align-items-center  avatar-online">
-                                                {user?.isAdmin ?  <FontAwesomeIcon icon={faUser} className="h-90 rounded-circle" /> :  <img src={user?.images} alt className="h-70 rounded-circle" /> }
+                                                {user?.isAdmin ?  <FontAwesomeIcon icon={faUser} className="h-90 rounded-circle" /> :  <img height={50} width={50} src={user?.images} alt className="h-70 rounded-circle" /> }
                                                 </div>
                                             </div>
                                             <div class="flex-grow-1">
                                                 <span class="fw-medium d-block">{user?.full_name}</span>
-                                                <small class="text-muted">{role == "jimAdmin" ? "jim Admin" : role}</small>
+                                                <small class="text-muted">{role == "jimAdmin" ? "Gym Admin" : role}</small>
                                             </div>
                                         </div>
                                     </a>

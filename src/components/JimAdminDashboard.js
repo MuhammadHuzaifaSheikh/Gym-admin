@@ -27,8 +27,8 @@ const JimAdminDashboard = () => {
 
     const response = await axios.get(`${App_host}/user/getAllBusinessUser`, {
       params: {
-          BusinessLocation: activegym
-      },
+        BusinessLocation: activegym
+    },
       headers: {
           token,
       },
@@ -49,10 +49,40 @@ const JimAdminDashboard = () => {
       },
     });
     if (activeuser) {
-      settotalUser(response.data?.data.results.length);
-      setActiveUser(response.data?.data.results.filter((item)=>item.status==='active').length);
-      setPendinguser(response.data?.data.results.filter((item)=>item.status==='pending').length);
+      const users = response.data?.data.results
+
+      console.log("users",users)
+      settotalUser(users.length);
+  
+
+
+
+// Filter for active users based on BusinessLocation status
+
+   // Filter for active users based on BusinessLocation status
+const activeUsersLength = users.filter(user => 
+  user.BusinessLocation.some(gym => gym.Gym === activegym && gym.status === "active")
+).length;
+
+// Filter for pending users based on BusinessLocation status
+const pendingUsersLength = users.filter(user => 
+  user.BusinessLocation.some(gym => gym.Gym === activegym && gym.status === "pending")
+).length;
+      setActiveUser(activeUsersLength);
+      setPendinguser(pendingUsersLength);
+
+    console.log("pendingUsersLength",pendingUsersLength)
+
     }
+
+
+
+
+
+
+
+
+
   };
 
   const getPackagesList = async () => {

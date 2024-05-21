@@ -134,7 +134,13 @@ const NewPackages = () => {
 
 
     const lastDateMemo = useMemo(()=>{
-        let inputDate = new Date(user?.active_date)
+    
+
+       const currentGymJoined =  user?.BusinessLocation.find((item)=>item?.Gym?._id === activegym    )
+
+       console.log("currentGymJoined",currentGymJoined)
+        
+        let inputDate = new Date(currentGymJoined?.active_date)
       return  getDateAfter30Days(inputDate)
     },[user])
 

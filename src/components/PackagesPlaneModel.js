@@ -115,7 +115,7 @@ const PackagesPlaneModel = ({ showPackages, handleShowpackage, activePackage, ha
                             <button type="button" className="btn-close" onClick={handleShowpackage}></button>
                             {/* Pricing Plans */}
                             <div className="py-0 rounded-top">
-                                <h2 className="text-center mb-2">Pricing Psslans</h2>
+                                <h2 className="text-center mb-2">Pricing Plans</h2>
                                 {/* Rest of your code... */}
                                 <div className="row mx-0 gy-3">
                                     {packagesData.length > 0 ? (

@@ -22,7 +22,7 @@ import {
 import { Link, useLocation } from "react-router-dom";
 import logo from "../../assets/logo.png";
 
-const Sidebar = ({ handleShowNav }) => {
+const Sidebar = ({ handleShowNav,setTopHeading }) => {
   const [isActiveGymsOpen, setIsActiveGymsOpen] = useState(false);
   const [isActiveEarningsOpen, setIsActiveEarningsOpen] = useState(false);
   const [changeactiveGym, setChangeactiveGym] = useState(false);
@@ -33,12 +33,15 @@ const Sidebar = ({ handleShowNav }) => {
   let JimsList = [];
   if (!user.isAdmin && !user.isJimAdmin) {
     user.BusinessLocation.forEach((Gym) => {
-      JimsList.push({
-        label: `${Gym.Gym.name}`,
-        icon: faCircle,
-        itemId: Gym.Gym._id.toString(),
-        is_Active: activegym == Gym.Gym._id.toString() ? true : false,
-      });
+      if(Gym?.status ==='active'){
+        JimsList.push({
+          label: `${Gym.Gym.name}`,
+          icon: faCircle,
+          itemId: Gym.Gym._id.toString(),
+          is_Active: activegym == Gym.Gym._id.toString() ? true : false,
+        });
+      }
+   
     });
   }
   // Define menu items based on user roles
@@ -81,9 +84,9 @@ const Sidebar = ({ handleShowNav }) => {
         icon: faDumbbell,
       },
       { label: "Dashboard", link: "/", icon: faHome },
-      { label: "Packages", link: gymDetail==='undefined'?"#": "/newpackages", icon: faCubes },
-      { label: "Other Gyms", link:  gymDetail==='undefined'?"#":"/Other-jims", icon: faCloud },
-      { label: "Attendance", link:  gymDetail==='undefined'?"#":"/attendance", icon: faCalendar },
+      { label: "Packages", link: gymDetail==='undefined' ||user.BusinessLocation.find((item)=>item?.Gym?._id===activegym)   ?"#": "/newpackages", icon: faCubes },
+      { label: "Other Gyms", link:  gymDetail==='undefined' ?"#":"/Other-jims", icon: faCloud },
+      { label: "Attendance", link:  gymDetail==='undefined'||user.BusinessLocation.find((item)=>item?.Gym?._id===activegym) ?"#":"/attendance", icon: faCalendar },
     ],
   };
 
@@ -91,18 +94,18 @@ const Sidebar = ({ handleShowNav }) => {
     setIsActiveGymsOpen(!isActiveGymsOpen);
     setIsActiveEarningsOpen(!isActiveEarningsOpen);
   };
-  console.log(
-    "isActiveGymsOpenisActiveGymsOpenisActiveGymsOpen",
-    isActiveGymsOpen
-  );
+
   let handleActiveGym = (gymId) => {
+
+    const currentGymDetail = user.BusinessLocation.find((item)=>item?.Gym?._id===gymId)?.Gym
+
+    console.log("activegym",currentGymDetail)
     localStorage.removeItem("activegym");
     localStorage.setItem("activegym", gymId);
-    let [gymdetail] = user.BusinessLocation.filter((location) => {
-      return location.Gym._id.toString() == gymId;
-    });
-    if (gymdetail) {
-      localStorage.setItem("gymDetail", JSON.stringify(gymdetail.Gym));
+  
+    if (currentGymDetail) {
+      localStorage.setItem("gymDetail", JSON.stringify(currentGymDetail));
+      setTopHeading(currentGymDetail.name);
     }
     setChangeactiveGym(!changeactiveGym);
   };

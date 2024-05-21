@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { faFaceFrown, faMapMarker } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios';
@@ -7,17 +6,20 @@ import { App_host } from '../Data';
 import GymsPopup from '../components/GymsPopup';
 import gymImage from "../assets/gym.jpeg"
 const Otherjims = () => {
+
     const [jim, setJim] = useState([]);
     const [totalPages, setTotalPages] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
     const [nearby, setNearby] = useState(false);
     const [gymId, setGymId] = useState("");
+    const [selectedGym,setSelectedGym] = useState()
     const itemsPerPage = 12;
 
     const [showPackages, setShowPackages] = useState(false)
 
-    let handleShowpackageModel = (id) => {
+    let handleShowpackageModel = (id,gym) => {
         setGymId(id)
+        setSelectedGym(gym)
         setShowPackages(!showPackages)
     }
     useEffect(() => {
@@ -42,8 +44,11 @@ const Otherjims = () => {
                     return
                 }
 
-                const otherGyms = filteredGym.filter((item) => user.BusinessLocation.some((v) => v.Gym?._id !== item?._id))
-                setJim(otherGyms);
+
+                // const otherGyms = filteredGym.filter((item) => user.BusinessLocation.some((v) => v.Gym?._id !== item?._id))
+                const otherGyms = filteredGym.filter((item) =>   !user.BusinessLocation.some((v) => v.Gym?._id === item?._id)   );
+                  setJim(otherGyms);
+                  setJim(otherGyms);
 
                 setTotalPages(response.data.data.businessLocations.totalPages);
 
@@ -114,7 +119,7 @@ const Otherjims = () => {
                                             <p className="card-text">
                                                 <i><FontAwesomeIcon icon={faMapMarker} /></i> {data.adress}
                                             </p>
-                                            <button className="btn btn-primary" onClick={() => handleShowpackageModel(data._id.toString())}>Register Now</button>
+                                            <button className="btn btn-primary" onClick={() => handleShowpackageModel(data._id.toString(),data)}>Register Now</button>
                                         </div>
                                     </div>
                                 </div>
@@ -132,7 +137,7 @@ const Otherjims = () => {
                         )}
                     </div>
                     {
-                        showPackages && <GymsPopup showPackages={showPackages} handleShowpackage={handleShowpackageModel} gymid={gymId} />
+                        showPackages && <GymsPopup showPackages={showPackages} handleShowpackage={handleShowpackageModel} gymid={gymId} selectedGym={selectedGym} />
                     }
                     {totalPages > 1 && (
                         <div className="row mt-4">

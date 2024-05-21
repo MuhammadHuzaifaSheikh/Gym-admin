@@ -7,6 +7,7 @@ import { App_host } from "../Data";
 import UserDetails from "./UserDetail";
 import { string } from "yup";
 
+
 const Table = ({ data, pagination, onPageChange, reloadUsers, type, adminGymUsers,all }) => {
   const { page, totalPages } = pagination;
   let token = localStorage.getItem("token");
@@ -14,6 +15,7 @@ const Table = ({ data, pagination, onPageChange, reloadUsers, type, adminGymUser
   const [detailsData, setDetailsData] = useState(null);
 
 
+  const activegym = localStorage.getItem("activegym");
 
 
 
@@ -30,6 +32,7 @@ const Table = ({ data, pagination, onPageChange, reloadUsers, type, adminGymUser
         `${App_host}${endpoint}`,
         {
           [field]: field === 'status' ? changeStatus : changePaymentStatus,
+          gymId:activegym,
           id: id,
         },
         {
@@ -369,9 +372,12 @@ const Table = ({ data, pagination, onPageChange, reloadUsers, type, adminGymUser
         {data.length > 0 ? (
           <>
             {data.map((user, index) => {
-              {
-                console.log("datauze", user);
-              }
+              
+
+              const gymId = localStorage.getItem("activegym");
+              console.log("gymId",user?.BusinessLocation)
+              const status  = user?.BusinessLocation.find((v)=> v?.Gym===   gymId         )?.status
+              const payment_status  = user?.BusinessLocation.find((v)=> v?.Gym===   gymId         )?.payment_status
 
               return (
                 <>
@@ -401,20 +407,20 @@ const Table = ({ data, pagination, onPageChange, reloadUsers, type, adminGymUser
                       <span
                         className="badge text-uppercase"
                         style={{
-                          backgroundColor: user.status == "active" ? "green" : "red",
+                          backgroundColor: status == "active" ? "green" : "red",
                         }}
                       >
-                        {user.status}
+                        {status}
                       </span>
                     </td>
                     <td className="" style={{}}>
                       <span
                         className="badge  text-uppercase"
                         style={{
-                          backgroundColor: user.payment_status == "paid" ? "green" : "red",
+                          backgroundColor: payment_status == "paid" ? "green" : "red",
                         }}
                       >
-                        {user.payment_status}
+                        {payment_status}
                       </span>
                     </td>
                     {adminGymUsers && <td>
@@ -437,14 +443,14 @@ const Table = ({ data, pagination, onPageChange, reloadUsers, type, adminGymUser
                             className="dropdown-item cursor-pointer"
                             onClick={() => handleUpdate(
                               type,
-                              user.status,
+                              status,
                               type === "jim"
                                 ? user.Owner.toString()
                                 : user._id.toString(),
                               'status'
                             )}
                           >
-                            {user.status == "active" ? "inactive" :  all?"Active": "Approve"}
+                            {status == "active" ? "inactive" :  all?"Active": "Approve"}
                           </a>
                           <div className="dropdown-divider"></div>
 
@@ -452,14 +458,14 @@ const Table = ({ data, pagination, onPageChange, reloadUsers, type, adminGymUser
                             className="dropdown-item cursor-pointer"
                             onClick={() => handleUpdate(
                               type,
-                              user.payment_status,
+                              payment_status,
                               type === "jim"
                                 ? user.Owner.toString()
                                 : user._id.toString(),
                               'payment_status'
                             )}
                           >
-                            {user.payment_status == "paid" ? "unpaid" : "paid"}
+                            {payment_status == "paid" ? "unpaid" : "paid"}
                           </a>
                           <div className="dropdown-divider"></div>
                           <a

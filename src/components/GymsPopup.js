@@ -3,17 +3,19 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faCheckCircle, faIndianRupeeSign } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import { App_host } from '../Data';
-import { Link } from 'react-router-dom';
+import { Link, useRouter } from 'react-router-dom';
 import { Bounce, toast, ToastContainer } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
-const GymsPopup = ({ showPackages, handleShowpackage, gymid }) => {
+const GymsPopup = ({ showPackages, handleShowpackage, gymid, selectedGym }) => {
+    const navigate = useNavigate();
+
     const [showModal, setShowModal] = useState(false);
     const [packagesData, SetPackagesData] = useState([]);
     const [totalPages, setTotalPages] = useState(0);
     const [page, setPage] = useState(1);
     const [limit, setLimit] = useState(10);
     const [search, setSearch] = useState('');
-    const activegym = localStorage.getItem("activegym")
     let user = JSON.parse(localStorage.getItem('user'))
     let token = localStorage.getItem('token')
 
@@ -48,12 +50,12 @@ const GymsPopup = ({ showPackages, handleShowpackage, gymid }) => {
                 },
             });
             console.log("rrrrrrrrrrrrrrrr", response);
-    
+
             let { results, ...otherPages } = response.data.data;
-    
+
             // Fetch user data for custom packages
             const fetchUserData = async (userId) => {
-                console.log("userId",userId)
+                console.log("userId", userId)
                 try {
                     const userResponse = await axios.get(`${App_host}/getOne/${userId}`, {
                         headers: {
@@ -61,27 +63,35 @@ const GymsPopup = ({ showPackages, handleShowpackage, gymid }) => {
                         },
                     });
 
-                    console.log("userResponse",userResponse.data)
+                    console.log("userResponse", userResponse.data)
                     return userResponse.data.data; // Adjust based on the actual response structure
                 } catch (error) {
                     console.error(`Error fetching user data for user ID ${userId}:`, error);
                     return null;
                 }
             };
-    
+
             // Iterate over results to fetch user data for custom packages
             const updatedResults = await Promise.all(
                 results.map(async (pkg) => {
-                    if (pkg?.type === 'custom' && pkg?.customPackageUsers?.length > 0) {
-                        const userId = pkg.customPackageUsers[0]; // Extract the user ID
-                        const userData = await fetchUserData(userId);
+                    if (pkg?.type !== 'custom') {
+                        // Non-custom package, include it
+                        return pkg;
+                    } else if (pkg?.customPackageUsers?.includes(user._id)) {
+                        // Custom package with current user's ID, include it
+                        const userData = await fetchUserData(user._id);
                         return { ...pkg, userData };
+                    } else {
+                        // Custom package without current user's ID, exclude it
+                        return null;
                     }
-                    return pkg;
                 })
             );
-    
-            SetPackagesData(updatedResults);
+
+            // Filter out null values (custom packages without current user's ID)
+            const filteredResults = updatedResults.filter(pkg => pkg !== null);
+
+            SetPackagesData(filteredResults);
             setTotalPages(otherPages.totalPages);
         } catch (error) {
             console.error('Error fetching users:', error);
@@ -92,7 +102,7 @@ const GymsPopup = ({ showPackages, handleShowpackage, gymid }) => {
     }, [])
 
 
-    console.log("packagesData",packagesData)
+    console.log("packagesData", packagesData)
     let handleSubitform = async (packageId) => {
         try {
 
@@ -100,29 +110,41 @@ const GymsPopup = ({ showPackages, handleShowpackage, gymid }) => {
             let formData = {
                 ...userData,
                 BusinessLocation: gymid,
-                package: packageId
+                package: packageId,
             }
 
+
+            console.log("formData", formData)
 
             const response = await axios.post(`${App_host}/user/addUser`, formData, {
                 headers: {
                 },
             });
-            console.log("response",response)
+
+
+            /// I want to store data on local storage and re-rencer
+
 
 
             if (response?.data?.success) {
-                toast.success('User registered successfully!', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                    transition: Bounce,
-                });
+
+                console.log("response?.data", response?.data?.data)
+
+                localStorage.removeItem("user")
+                let updatedUser = { ...response?.data?.data }
+
+                updatedUser.BusinessLocation = [...user.BusinessLocation, { Gym: selectedGym, package: packageId }]
+
+
+                console.log("updatedUser", updatedUser)
+
+
+                localStorage.setItem("user", JSON.stringify(updatedUser))
+                localStorage.setItem("gymDetail", JSON.stringify(selectedGym))
+                localStorage.setItem("activegym", gymid)
+               alert('Your request is sent to gym wait until they approve');
+
+                navigate("/")
             } else {
                 toast.error("An Error Occured ", {
                     position: "top-right",
@@ -161,19 +183,19 @@ const GymsPopup = ({ showPackages, handleShowpackage, gymid }) => {
                             <button type="button" className="btn-close" onClick={handleShowpackage}></button>
                             {/* Pricing Plans */}
                             <div className="py-0 rounded-top">
-                                <h2 className="text-center mb-2">Select package</h2>
+                                <h2 className="text-center mb-2">Select Package</h2>
                                 <div className="d-flex align-items-center justify-content-center flex-wrap gap-2 pt-3 mb-4">
                                     <div className="row gx-3">
                                         {packagesData.length > 0 ? (
                                             packagesData.map((item) => (
-                                                <div className="col-xl mb-md-0 mb-4" key={item._id}>
+
+
+                                                <div className="col-sm mb-md-0 mb-4" key={item._id}>
                                                     <div className="card border-primary border shadow-none">
                                                         <div className="card-body position-relative">
                                                             {/* Rest of your card content... */}
-
-                                                            
                                                             <h3 className="card-title text-center text-capitalize mb-1">{item.name}</h3>
-                                                            <p className="text-center">  {item?.type==="custom"?"For Custom User":" For Gym users"}</p>
+                                                            <p className="text-center">{item?.type === 'custom' ? "For Custom User" : "For Gym users"}</p>
                                                             <div className="text-center h-px-100 mb-2">
                                                                 <div className="d-flex justify-content-center">
                                                                     <sup className="h6 pricing-currency mt-3 mb-0 me-1 text-primary"><FontAwesomeIcon icon={faIndianRupeeSign} /></sup>
@@ -188,16 +210,7 @@ const GymsPopup = ({ showPackages, handleShowpackage, gymid }) => {
                                                             {!user.isAdmin && (
                                                                 <button className="btn btn-primary" onClick={() => handleSubitform(item._id.toString())}>Register Now</button>
                                                             )}
-                                                            {/* {!user.isJimAdmin && (
-                                                <Link to={activePackage?._id === item?._id ? "#" : `/checkoutPackage?id=${item._id.toString()}`}>
-                                                    <button disabled={activePackage?._id === item?._id} type="button" className="btn  btn-primary d-grid w-100 mt-3" data-bs-dismiss="modal"> {activePackage?._id === item?._id ? "Current Plan" : "Upgrade"} </button>
-                                                </Link>
-                                            )} */}
-                                                            {/* Edit button */}
-
-                                                            {/* <button  className="btn btn-sm btn-outline-primary position-absolute top-0 end-0 m-2" onClick={() => handleEditPackage(item._id)}>
-                                                <FontAwesomeIcon icon={faEdit} />
-                                            </button> */}
+                                                   
                                                         </div>
                                                     </div>
                                                 </div>

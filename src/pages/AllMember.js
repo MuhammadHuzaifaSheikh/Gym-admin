@@ -64,7 +64,7 @@ const AllMember = () => {
                         <div className="col-6 col-sm-6 col-md-6">
                             <div className="dataTables_length" id="DataTables_Table_3_length">
                                 <label className="d-flex align-items-center flex-row mw-100">
-                                    <div className="text-nowrap pr-2">Show Results</div>
+                                    <div className="text-nowrap pr-2 mx-4">Show Results</div>
                                     <select
                                         value={limit}
                                         onChange={(e) => handleLimitChange(e.target.value)}

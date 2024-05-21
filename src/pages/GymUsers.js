@@ -64,7 +64,7 @@ const GymUsers = () => {
                   id="DataTables_Table_3_length"
                 >
                   <label className="d-flex align-items-center flex-row mw-100">
-                    <div className="text-nowrap pr-2">Show Results</div>
+                    <div className="text-nowrap pr-2 mx-4">Show Results</div>
 
                     <select
                       value={limit}
