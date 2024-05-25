@@ -30,6 +30,7 @@ const AddNewJim = () => {
 
 
     const handleSubmit = async (values, formikBag) => {
+        alert()
         try {
 
             const formValues = await RegisterGymSchema.validate(values, { abortEarly: false });
@@ -44,6 +45,7 @@ const AddNewJim = () => {
             });
 
 
+             
             if (formValues.images && formValues.images.length > 0) {
                 formValues.images.forEach((image) => {
                     formData.append('images', image);

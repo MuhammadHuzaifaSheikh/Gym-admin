@@ -39,6 +39,7 @@ const NewGymRequests = ({ isRequests ,adminGymUsers}) => {
       let { businessLocations, ...otherPages } = response.data.data;
       setUserData(businessLocations?.results);
       setPagination(otherPages);
+      console.log("businessLocations",businessLocations)
     } catch (error) {
       console.error("Error fetching users:", error);
     }
@@ -64,6 +65,9 @@ const NewGymRequests = ({ isRequests ,adminGymUsers}) => {
   useEffect(() => {
     fetchUsers();
   }, [page, limit, search, isRequests,statusFilter]);
+
+
+  console.log("pagination",pagination)
 
   return (
     <div className="container-xxl flex-grow-1 container-p-y">

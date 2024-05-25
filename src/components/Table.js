@@ -8,7 +8,12 @@ import UserDetails from "./UserDetail";
 import { string } from "yup";
 
 
-const Table = ({ data, pagination, onPageChange, reloadUsers, type, adminGymUsers,all }) => {
+
+
+
+
+
+const Table = ({ data, pagination, onPageChange, reloadUsers, type, all, }) => {
   const { page, totalPages } = pagination;
   let token = localStorage.getItem("token");
   const [showDetails, setShowDetails] = useState(false);
@@ -32,7 +37,7 @@ const Table = ({ data, pagination, onPageChange, reloadUsers, type, adminGymUser
         `${App_host}${endpoint}`,
         {
           [field]: field === 'status' ? changeStatus : changePaymentStatus,
-          gymId:activegym,
+          gymId: activegym,
           id: id,
         },
         {
@@ -154,6 +159,9 @@ const Table = ({ data, pagination, onPageChange, reloadUsers, type, adminGymUser
     (_, index) => index + 1
   );
 
+
+  console.log("page", page)
+
   return (
     <div>
 
@@ -188,7 +196,7 @@ const Table = ({ data, pagination, onPageChange, reloadUsers, type, adminGymUser
               </button>
             </li>
           ))}
-          <li className={`page-item ${page === totalPages ? "disabled" : ""}`}>
+          <li className={`page-item ${page < totalPages ? "" : "disabled"}`}>
             <button
               className="page-link"
               onClick={() => onPageChange(page + 1)}
@@ -203,43 +211,7 @@ const Table = ({ data, pagination, onPageChange, reloadUsers, type, adminGymUser
   );
 
   function CustomTable() {
-    const [expandedRows, setExpandedRows] = useState({});
-    const [openState, setOpenState] = useState({});
-    const [gymMember, setGymMember] = useState({});
 
-    const toggleRow = async (gymId) => {
-      const newExpandedRows = { ...expandedRows };
-      const newOpenState = { ...openState };
-
-      if (!newExpandedRows[gymId]) {
-        newExpandedRows[gymId] = true;
-        newOpenState[gymId] = true;
-      } else {
-        delete newExpandedRows[gymId];
-        delete newOpenState[gymId];
-      }
-      await fetchUsers(gymId);
-      setExpandedRows(newExpandedRows);
-      setOpenState(newOpenState);
-    };
-
-    const fetchUsers = async (gymId) => {
-      try {
-        const response = await axios.get(`${App_host}/user/getAllBusinessUser`, {
-          params: {
-            BusinessLocation: gymId,
-          },
-          headers: {
-            token,
-          },
-        });
-
-        const { results } = response.data.data;
-        setGymMember((prevGymMember) => ({ ...prevGymMember, [gymId]: results }));
-      } catch (error) {
-        console.error('Error fetching users:', error);
-      }
-    };
 
 
     return <table
@@ -294,7 +266,7 @@ const Table = ({ data, pagination, onPageChange, reloadUsers, type, adminGymUser
             Contact
           </th>
 
-          {type === "jim" ? (
+          {type === "jim" && (
             <th
               className="sorting"
               tabIndex="0"
@@ -306,19 +278,19 @@ const Table = ({ data, pagination, onPageChange, reloadUsers, type, adminGymUser
             >
               City
             </th>
-          ) : (
-            <th
-              className="sorting"
-              tabIndex="0"
-              aria-controls="DataTables_Table_3"
-              rowSpan="1"
-              colSpan="1"
-              style={{ width: "229px" }}
-              aria-label="Email: aktivieren, um Spalte aufsteigend zu sortieren"
-            >
-              Email
-            </th>
           )}
+
+          <th
+            className="sorting"
+            tabIndex="0"
+            aria-controls="DataTables_Table_3"
+            rowSpan="1"
+            colSpan="1"
+            style={{ width: "229px" }}
+            aria-label="Email: aktivieren, um Spalte aufsteigend zu sortieren"
+          >
+            Email
+          </th>
           <th
             className="sorting"
             tabIndex="0"
@@ -331,7 +303,36 @@ const Table = ({ data, pagination, onPageChange, reloadUsers, type, adminGymUser
             Date
           </th>
 
-          <th
+          {type !== 'admin' && <>
+
+            <th
+              className="sorting"
+              tabIndex="0"
+              aria-controls="DataTables_Table_3"
+              rowSpan="1"
+              colSpan="1"
+              style={{ width: "90px" }}
+              aria-label="Status: aktivieren, um Spalte aufsteigend zu sortieren"
+            >
+              Status
+            </th>
+            <th
+              className="sorting"
+              tabIndex="0"
+              aria-controls="DataTables_Table_3"
+              rowSpan="1"
+              colSpan="1"
+              style={{ width: "90px" }}
+              aria-label="Status: aktivieren, um Spalte aufsteigend zu sortieren"
+            >
+              Payment
+            </th>
+
+
+          </>}
+
+
+          {type === 'admin' && <th
             className="sorting"
             tabIndex="0"
             aria-controls="DataTables_Table_3"
@@ -340,19 +341,13 @@ const Table = ({ data, pagination, onPageChange, reloadUsers, type, adminGymUser
             style={{ width: "90px" }}
             aria-label="Status: aktivieren, um Spalte aufsteigend zu sortieren"
           >
-            Status
+            Gyms
           </th>
-          <th
-            className="sorting"
-            tabIndex="0"
-            aria-controls="DataTables_Table_3"
-            rowSpan="1"
-            colSpan="1"
-            style={{ width: "90px" }}
-            aria-label="Status: aktivieren, um Spalte aufsteigend zu sortieren"
-          >
-            Payment
-          </th>
+          }
+
+
+
+
           {type !== "admin" ? (
             <th
               className="sorting_disabled"
@@ -372,12 +367,12 @@ const Table = ({ data, pagination, onPageChange, reloadUsers, type, adminGymUser
         {data.length > 0 ? (
           <>
             {data.map((user, index) => {
-              
+
 
               const gymId = localStorage.getItem("activegym");
-              console.log("gymId",user?.BusinessLocation)
-              const status  = user?.BusinessLocation.find((v)=> v?.Gym===   gymId         )?.status
-              const payment_status  = user?.BusinessLocation.find((v)=> v?.Gym===   gymId         )?.payment_status
+              const status = user?.BusinessLocation?.find((v) => v?.Gym === gymId)?.status
+              const payment_status = user?.BusinessLocation?.find((v) => v?.Gym === gymId)?.payment_status
+
 
               return (
                 <>
@@ -395,40 +390,55 @@ const Table = ({ data, pagination, onPageChange, reloadUsers, type, adminGymUser
                       <td>{user.full_name}</td>
                     )}
                     <td>{user.phone}</td>
-                    {type === "jim" ? (
+                    {type === "jim" && (
                       <td>{user.city}</td>
-                    ) : (
-                      <td>{user.email}</td>
                     )}
+
+                    <td>{user?.email}</td>
                     <td className="" style={{}}>
                       {new Date(user.createdAt).toDateString()}
                     </td>
-                    <td className="" style={{}}>
-                      <span
-                        className="badge text-uppercase"
-                        style={{
-                          backgroundColor: status == "active" ? "green" : "red",
-                        }}
-                      >
-                        {status}
-                      </span>
-                    </td>
-                    <td className="" style={{}}>
-                      <span
-                        className="badge  text-uppercase"
-                        style={{
-                          backgroundColor: payment_status == "paid" ? "green" : "red",
-                        }}
-                      >
-                        {payment_status}
-                      </span>
-                    </td>
-                    {adminGymUsers && <td>
-                      <button onClick={() => toggleRow(user._id)} className="btn btn-primary"> {openState[user._id] ? "Close" : "View"}</button>
-                    </td>}
 
 
-                    {!adminGymUsers && <td className="" style={{}}>
+                    {type !== 'admin' && <>
+                      <td className="" style={{}}>
+                        <span
+                          className="badge text-uppercase bg"
+                          style={{
+                            backgroundColor: type === 'jim' ? user?.status == "active" ? "green" : "red" : status == "active" ? "green" : "red",
+                          }}
+                        >
+                          {type === 'jim' ? user?.status : status}
+                        </span>
+                      </td>
+                      <td className="" style={{}}>
+                        <span
+                          className="badge  text-uppercase"
+                          style={{
+                            backgroundColor: type === 'jim' ? user?.payment_status == "active" ? "green" : "red" : payment_status == "active" ? "green" : "red",
+                          }}
+                        >
+                          {type === 'jim' ? user?.payment_status : payment_status}
+                        </span>
+                      </td>
+
+                    </>}
+
+
+                    {type === 'admin' && <td
+                      className="sorting"
+                      tabIndex="0"
+                      aria-controls="DataTables_Table_3"
+                      rowSpan="1"
+                      colSpan="1"
+                      style={{ width: "90px" }}
+                      aria-label="Status: aktivieren, um Spalte aufsteigend zu sortieren"
+                    >
+                      {user?.BusinessLocation.map((item,index)=> <div key={index} ><p > {item?.gymDetails?.name},   </p></div> )}
+                    </td>
+                    }
+
+                    {type !== "admin" && <td className="" style={{}}>
 
                       <div className="d-inline-block">
                         <a
@@ -450,7 +460,7 @@ const Table = ({ data, pagination, onPageChange, reloadUsers, type, adminGymUser
                               'status'
                             )}
                           >
-                            {status == "active" ? "inactive" :  all?"Active": "Approve"}
+                            {status == "active" ? "inactive" : all ? "Active" : "Approve"}
                           </a>
                           <div className="dropdown-divider"></div>
 
@@ -493,34 +503,7 @@ const Table = ({ data, pagination, onPageChange, reloadUsers, type, adminGymUser
 
 
                   </tr>
-                  {expandedRows[user._id] && Array.isArray(gymMember[user._id]) ? gymMember[user._id].map((member) => (
-                    <tr className="odd" key={member._id}>
-                      <td>{member.full_name}</td>
-                      <td>{member.email}</td>
-                      <td>{member.city}</td>
-                      <td>{member.phone}</td>
-                      <td className="" style={{}}>
-                      <span
-                        className="badge  text-uppercase"
-                        style={{
-                          backgroundColor: member.payment_status == "paid" ? "green" : "red",
-                        }}
-                      >
-                        {member.payment_status}
-                      </span>
-                    </td>
-                    <td className="" style={{}}>
-                      <span
-                        className="badge text-uppercase"
-                        style={{
-                          backgroundColor: member.status == "active" ? "green" : "red",
-                        }}
-                      >
-                        {member.status}
-                      </span>
-                    </td>
-                    </tr>
-                  )): openState[user._id] && <h3 className="">No user registerd in this gym</h3>}
+
                 </>
 
 
@@ -538,5 +521,8 @@ const Table = ({ data, pagination, onPageChange, reloadUsers, type, adminGymUser
     </table>;
   }
 };
+
+
+
 
 export default Table;

@@ -12,7 +12,6 @@ const GymUsers = () => {
 
   const token = localStorage.getItem("token");
   const user = JSON.parse(localStorage.getItem("user"));
-
   const fetchUsers = async () => {
     try {
       const response = await axios.get(`${App_host}/user/getAllBusinessUser`, {
@@ -26,14 +25,48 @@ const GymUsers = () => {
           token,
         },
       });
-
+  
       let { results, ...otherPages } = response.data.data;
-      setUserData(results);
+      const usersWithGymDetails = await Promise.all(
+        results.map(async (user) => {
+          const businessLocationsWithGymDetails = await Promise.all(
+            user.BusinessLocation.map(async (location) => {
+              const gymDetails = await fetchGymDetails(location.Gym);
+              return {
+                ...location,
+                gymDetails,
+              };
+            })
+          );
+          return {
+            ...user,
+            BusinessLocation: businessLocationsWithGymDetails,
+          };
+        })
+      );
+  
+
+      console.log("usersWithGymDetails",usersWithGymDetails)
+      setUserData(usersWithGymDetails);
       setPagination(otherPages);
     } catch (error) {
       console.error("Error fetching users:", error);
     }
   };
+
+
+  const fetchGymDetails = async (gymId) => {
+    try {
+      const response = await axios.get(`${App_host}/Jim/getOneLocation`, {
+        params: { id: gymId, fields:"name" },
+        headers: { token },
+      });
+      return response.data.data;
+    } catch (error) {
+      console.error(`Error fetching gym details for gym ID ${gymId}:`, error);
+      return null;
+    }
+  }
 
   const handleSearchChange = (event) => {
     setSearch(event.target.value);
@@ -51,6 +84,8 @@ const GymUsers = () => {
   useEffect(() => {
     fetchUsers();
   }, [page, limit, search]);
+
+
   return (
     <>
       <div className="container-xxl flex-grow-1 container-p-y">
